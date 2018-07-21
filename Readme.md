@@ -17,7 +17,7 @@ for time synchronization.
 This function:
 
 ```
-void setCustomMillis(uint32_t(*millisFunc)())
+void setExternalMillis(unsigned long(*millisFunc)())
 ```
 
 allows to specify the custom millis function to be used, allowing to perform unit testing on 

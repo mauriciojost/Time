@@ -32,21 +32,6 @@
 static tmElements_t tm;          // a cache of time elements
 static time_t cacheTime;   // the time the cache was updated
 static uint32_t syncInterval = 300;  // time sync will be attempted after this many seconds
-static uint32_t(*millisFunc)() = 0;   // function to replace millis on other platforms
-
-#define UNINITIALIZED_MILLIS_FUNC
-
-void setCustomMillis(uint32_t(*f)()) {
-  millisFunc = f;
-}
-
-uint32_t customMillis() {
-  if (millisFunc != 0) {
-    return millisFunc(); // requires initialization
-  } else {
-    return SECS_YR_2000; // fixed because you haven't initialized the library!!!
-  }
-}
 
 void refreshCache(time_t t) {
   if (t != cacheTime) {
@@ -251,6 +236,10 @@ static timeStatus_t Status = timeNotSet;
 getExternalTime getTimePtr;  // pointer to external sync function
 //setExternalTime setTimePtr; // not used in this version
 
+unsigned long millisDefault() {return 0;}
+getExternalMillis getMillisPtr = millisDefault;  // pointer to external millis, heads
+// up, called aynchronously so it has to be atomically replaced by another function
+
 #ifdef TIME_DRIFT_INFO   // define this to get drift data
 time_t sysUnsyncedTime = 0; // the time sysTime unadjusted by sync  
 #endif
@@ -258,7 +247,7 @@ time_t sysUnsyncedTime = 0; // the time sysTime unadjusted by sync
 
 time_t now() {
 	// calculate number of seconds passed since last call to now()
-  while (customMillis() - prevMillis >= 1000) {
+  while (getMillisPtr() - prevMillis >= 1000) {
 		// millis() and prevMillis are both unsigned ints thus the subtraction will always be the absolute value of the difference
     sysTime++;
     prevMillis += 1000;	
@@ -289,7 +278,7 @@ void setTime(time_t t) {
   sysTime = (uint32_t)t;  
   nextSyncTime = (uint32_t)t + syncInterval;
   Status = timeSet;
-  prevMillis = customMillis();  // restart counting from now (thanks to Korman for this fix)
+  prevMillis = getMillisPtr();  // restart counting from now (thanks to Korman for this fix)
 } 
 
 void setTime(int hr,int min,int sec,int dy, int mnth, int yr){
@@ -327,4 +316,8 @@ void setSyncProvider( getExternalTime getTimeFunction){
 void setSyncInterval(time_t interval){ // set the number of seconds between re-sync
   syncInterval = (uint32_t)interval;
   nextSyncTime = sysTime + syncInterval;
+}
+
+void setExternalMillis(getExternalMillis getMillisFunction) { // identify the external millis function
+  getMillisPtr = getMillisFunction;
 }

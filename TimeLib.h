@@ -61,6 +61,7 @@ typedef struct  {
 typedef time_t(*getExternalTime)();
 //typedef void  (*setExternalTime)(const time_t); // not used in this version
 
+typedef unsigned long(*getExternalMillis)();
 
 /*==============================================================================*/
 /* Useful Constants */
@@ -134,12 +135,11 @@ timeStatus_t timeStatus(); // indicates if time has been set and recently synchr
 void    setSyncProvider( getExternalTime getTimeFunction); // identify the external time provider
 void    setSyncInterval(time_t interval); // set the number of seconds between re-sync
 
+void    setExternalMillis(getExternalMillis getMillisFunction); // identify the external millis function
+
 /* low level functions to convert to and from system time                     */
 void breakTime(time_t time, tmElements_t &tm);  // break time_t into elements
 time_t makeTime(const tmElements_t &tm);  // convert time elements into time_t
-
-/* callback function to be able to test the library without Arduino millis implementation */
-void setCustomMillis(uint32_t(*f)()); // provide a millis function available
 
 } // extern "C++"
 #endif // __cplusplus
