@@ -12,6 +12,17 @@ Example sketches illustrate how similar sketch code can be used with: a Real Tim
 internet NTP time service, GPS time data, and Serial time messages from a computer
 for time synchronization.
 
+## Difference from the original repo
+
+This function:
+
+```
+void setCustomMillis(uint32_t(*millisFunc)())
+```
+
+allows to specify the custom millis function to be used, allowing to perform unit testing on 
+the library without the need of any Arduino platform. 
+
 ## Functionality
 
 The functions available in the library include
