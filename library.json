@@ -1,5 +1,5 @@
 {
-    "name": "Time",
+    "name": "TimeWCallback",
     "description": "Time keeping library",
     "keywords": "Time, date, hour, minute, second, day, week, month, year, RTC",
     "authors": [
@@ -15,9 +15,9 @@
     ],
     "repository": {
         "type": "git",
-         "url": "https://github.com/PaulStoffregen/Time"
+         "url": "https://github.com/mauriciojost/Time"
     },
-    "version": "1.5",
+    "version": "1.5.0",
     "homepage": "http://playground.arduino.cc/Code/Time",
     "frameworks": "Arduino",
     "examples": [
