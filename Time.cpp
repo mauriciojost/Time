@@ -27,17 +27,26 @@
   1.4  5  Sep 2014 - compatibility with Arduino 1.5.7
 */
 
-#if ARDUINO >= 100
-#include <Arduino.h> 
-#else
-#include <WProgram.h> 
-#endif
-
 #include "TimeLib.h"
 
 static tmElements_t tm;          // a cache of time elements
 static time_t cacheTime;   // the time the cache was updated
 static uint32_t syncInterval = 300;  // time sync will be attempted after this many seconds
+static uint32_t(*millisFunc)() = 0;   // function to replace millis on other platforms
+
+#define UNINITIALIZED_MILLIS_FUNC
+
+void setCustomMillis(uint32_t(*f)()) {
+  millisFunc = f;
+}
+
+uint32_t customMillis() {
+  if (millisFunc != 0) {
+    return millisFunc(); // requires initialization
+  } else {
+    return SECS_YR_2000; // fixed because you haven't initialized the library!!!
+  }
+}
 
 void refreshCache(time_t t) {
   if (t != cacheTime) {
@@ -249,7 +258,7 @@ time_t sysUnsyncedTime = 0; // the time sysTime unadjusted by sync
 
 time_t now() {
 	// calculate number of seconds passed since last call to now()
-  while (millis() - prevMillis >= 1000) {
+  while (customMillis() - prevMillis >= 1000) {
 		// millis() and prevMillis are both unsigned ints thus the subtraction will always be the absolute value of the difference
     sysTime++;
     prevMillis += 1000;	
@@ -280,7 +289,7 @@ void setTime(time_t t) {
   sysTime = (uint32_t)t;  
   nextSyncTime = (uint32_t)t + syncInterval;
   Status = timeSet;
-  prevMillis = millis();  // restart counting from now (thanks to Korman for this fix)
+  prevMillis = customMillis();  // restart counting from now (thanks to Korman for this fix)
 } 
 
 void setTime(int hr,int min,int sec,int dy, int mnth, int yr){

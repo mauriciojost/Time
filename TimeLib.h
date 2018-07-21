@@ -138,6 +138,9 @@ void    setSyncInterval(time_t interval); // set the number of seconds between r
 void breakTime(time_t time, tmElements_t &tm);  // break time_t into elements
 time_t makeTime(const tmElements_t &tm);  // convert time elements into time_t
 
+/* callback function to be able to test the library without Arduino millis implementation */
+void setCustomMillis(uint32_t(*f)()); // provide a millis function available
+
 } // extern "C++"
 #endif // __cplusplus
 #endif /* _Time_h */
