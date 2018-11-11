@@ -282,19 +282,23 @@ void setTime(time_t t) {
 } 
 
 void setTime(int hr,int min,int sec,int dy, int mnth, int yr){
- // year can be given as full four digit year or two digts (2010 or 10 for 2010);  
+  setTime(makeTime(hr,min,sec,dy,mnth,yr));
+}
+
+time_t makeTime(int hr,int min,int sec,int dy, int mnth, int yr){
+ // year can be given as full four digit year or two digts (2010 or 10 for 2010);
  //it is converted to years since 1970
   if( yr > 99)
       yr = yr - 1970;
   else
-      yr += 30;  
+      yr += 30;
   tm.Year = yr;
   tm.Month = mnth;
   tm.Day = dy;
   tm.Hour = hr;
   tm.Minute = min;
   tm.Second = sec;
-  setTime(makeTime(tm));
+  return makeTime(tm);
 }
 
 void adjustTime(long adjustment) {
